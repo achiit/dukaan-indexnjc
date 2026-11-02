@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0A0C11">
+<title>AI Noise Remover</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============================= top bar ============================= -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 48 48">
+          <path d="M9 20.5 25.5 7c2.3-1.9 5.5-.3 5.5 2.7v28.6c0 3-3.2 4.6-5.5 2.7L9 27.5c-1.2-1-1.9-2.5-1.9-4S7.8 21.5 9 20.5Z"/>
+          <path d="M34 17.5c2.4 2 3.8 4.6 3.8 7.5s-1.4 5.5-3.8 7.5"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <b>AI Noise Remover</b>
+        <span>Studio Audio Cleaner</span>
+      </div>
+    </div>
+    <button class="icon-btn" id="settingsBtn" aria-label="Open menu">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <!-- ============================== home ============================ -->
+    <section id="homeView" class="view">
+      <div class="hero">
+        <span class="pill"><i></i>AI Powered Audio Enhancement</span>
+        <h1>Make Your Audio<br><em>Sound Clean.</em></h1>
+        <p>Remove background noise and bring the voice forward — all processed on your phone.</p>
+      </div>
+
+      <!-- picker -->
+      <button class="pick-card" id="selectAudioBtn">
+        <span class="pick-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 16V4"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/>
+            <path d="M5 14.5V19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4.5"/>
+          </svg>
+        </span>
+        <strong>Choose An Audio File</strong>
+        <small>MP3 · M4A · WAV · FLAC · OGG · OPUS</small>
+        <span class="pick-cta">Browse Files</span>
+      </button>
+      <input id="audioInput" type="file" accept="audio/*,.mp3,.m4a,.wav,.flac,.ogg,.opus" hidden>
+
+      <!-- selected file + start -->
+      <div class="file-card hidden" id="fileCard">
+        <div class="file-head">
+          <span class="file-icon">
+            <svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 14h6M9 17h4"/></svg>
+          </span>
+          <div class="file-copy">
+            <b id="pickedName">audio.mp3</b>
+            <span id="pickedMeta">—</span>
+          </div>
+          <div class="file-actions">
+            <button class="chip" id="changeFileBtn">Change</button>
+            <button class="chip ghost" id="clearBtn">Clear</button>
+          </div>
+        </div>
+        <button class="btn primary block" id="startBtn">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          Remove Noise
+        </button>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M3.5 12h3l2-6.5L13 18l2.2-6H20.5"/></svg>
+          </span>
+          <div><b>Noise Removal</b><small>Speech Focused</small></div>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M6 9v6M10 5v14M14 8v8M18 3v18"/></svg>
+          </span>
+          <div><b>Studio Output</b><small>Studio Quality</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================== processing ========================= -->
+    <section id="processingView" class="view hidden">
+      <div class="view-head">
+        <div>
+          <span class="eyebrow">Processing</span>
+          <h2>Creating Your Clean Audio</h2>
+        </div>
+        <span class="status-pill"><i class="spinner"></i>AI Working</span>
+      </div>
+
+      <div class="card">
+        <div class="file-head">
+          <span class="file-icon">
+            <svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 14h6M9 17h4"/></svg>
+          </span>
+          <div class="file-copy">
+            <b id="processingName">audio.mp3</b>
+            <span id="processingMeta">Preparing…</span>
+          </div>
+          <span class="badge">AI</span>
+        </div>
+
+        <div class="wave-box"><canvas id="processingWave"></canvas></div>
+
+        <div class="progress"><span id="progressBar"></span></div>
+        <div class="progress-meta">
+          <span id="progressLabel">Starting…</span>
+          <b id="progressPercent">0%</b>
+        </div>
+      </div>
+
+      <button class="btn ghost block" id="cancelBtn">Cancel Processing</button>
+      <p class="hint">You can cancel any time — nothing is saved until it finishes.</p>
+    </section>
+
+    <!-- ============================= result =========================== -->
+    <section id="resultView" class="view hidden">
+      <div class="view-head">
+        <div>
+          <span class="eyebrow ok"><span class="check">✓</span>Enhancement Complete</span>
+          <h2>Your Clean Audio Is Ready</h2>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="file-head">
+          <span class="file-icon">
+            <svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 14h6M9 17h4"/></svg>
+          </span>
+          <div class="file-copy">
+            <b id="resultName">Clean audio</b>
+            <span id="resultMeta">Enhanced</span>
+          </div>
+          <span class="badge ok">Saved</span>
+        </div>
+
+        <div class="wave-box tall"><canvas id="resultWave"></canvas></div>
+
+        <div class="player">
+          <button class="play" id="playBtn" aria-label="Play">
+            <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <div class="seek-wrap">
+            <input id="seekBar" type="range" min="0" max="1000" value="0" aria-label="Seek">
+            <div class="time-row"><span id="currentTime">0:00</span><span id="totalTime">0:00</span></div>
+          </div>
+          <button class="icon-btn ghost" id="muteBtn" aria-label="Mute">
+            <svg viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>
+          </button>
+        </div>
+        <audio id="audioPlayer" preload="metadata"></audio>
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" id="newAudioBtn">New Audio</button>
+        <button class="btn primary" id="shareBtn">Share</button>
+      </div>
+      <p class="hint">Saved To Your Device · Music / NoiseRemover</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>AI Noise Remover</span>
+    <span>Private · On Device</span>
+  </footer>
+</div>
+
+  <!-- ============================= side menu =========================== -->
+  <div class="menu-overlay hidden" id="menuOverlay"></div>
+  <aside class="side-menu" id="sideMenu" aria-hidden="true">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div class="sheet-inner" id="sheetMenu">
+    <div class="side-head">
+      <div class="side-brand">
+        <div class="side-logo">
+          <svg viewBox="0 0 48 48">
+            <path d="M9 20.5 25.5 7c2.3-1.9 5.5-.3 5.5 2.7v28.6c0 3-3.2 4.6-5.5 2.7L9 27.5c-1.2-1-1.9-2.5-1.9-4S7.8 21.5 9 20.5Z"/>
+            <path d="M34 17.5c2.4 2 3.8 4.6 3.8 7.5s-1.4 5.5-3.8 7.5"/>
+          </svg>
+        </div>
+        <div class="side-brand-text">
+          <b>AI Noise Remover</b>
+          <span>Studio Audio Cleaner</span>
+        </div>
+      </div>
+      <button class="icon-btn ghost" id="menuCloseBtn" aria-label="Close menu">
+        <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="side-hero">
+      <div class="side-hero-row">
+        <span class="side-hero-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 3 19 6v5.5c0 4.5-2.8 7.7-7 9.5-4.2-1.8-7-5-7-9.5V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+        </span>
+        <div>
+          <b>100% On-Device</b>
+          <span>Your audio never leaves this phone</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="side-label">Information</p>
+    <nav class="side-nav">
+      <button class="side-item" data-menu-page="about">
+        <span class="side-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+        </span>
+        <span class="side-copy"><b>About Us</b><small>What this app does</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <button class="side-item" data-menu-page="privacy">
+        <span class="side-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 3 19 6v5.5c0 4.5-2.8 7.7-7 9.5-4.2-1.8-7-5-7-9.5V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+        </span>
+        <span class="side-copy"><b>Privacy Policy</b><small>How your audio is handled</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <button class="side-item" data-menu-page="contact">
+        <span class="side-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
+        </span>
+        <span class="side-copy"><b>Contact Us</b><small>Send feedback or report a bug</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+    </nav>
+
+    <div class="side-tips">
+      <b>How It Works</b>
+      <div class="tip"><span>1</span><p>Pick any recording from your phone</p></div>
+      <div class="tip"><span>2</span><p>Our AI separates the voice from the noise</p></div>
+      <div class="tip"><span>3</span><p>Preview it, then save or share</p></div>
+    </div>
+
+    </div>
+
+    <!-- detail view: opens inside the same sheet -->
+    <div class="sheet-inner sheet-page hidden" id="sheetPage">
+      <header class="page-head">
+        <button class="icon-btn ghost" id="infoBackBtn" aria-label="Back">
+          <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div class="page-titles">
+          <span class="eyebrow" id="infoEyebrow">INFORMATION</span>
+          <h2 id="infoTitle">About</h2>
+        </div>
+      </header>
+      <div class="info-content" id="infoContent"></div>
+    </div>
+  </aside>
+
+<script>
+window.setSystemBarInsets = function (top, bottom) {
+  document.documentElement.style.setProperty('--system-top', top + 'px');
+  document.documentElement.style.setProperty('--system-bottom', bottom + 'px');
+};
+</script>
+<script src="app.js"></script>
+</body>
+</html>
